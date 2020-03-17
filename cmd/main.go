@@ -11,6 +11,7 @@ func main() {
 	g.AddEdge("B", "E", "")
 	g.AddEdge("E", "F", "label 2")
 	g.AddEdge("C", "F", "")
+	g.AddEdge(1, "A", "ints")
 
 	dotFilePath := "/tmp/hello.dot"
 	outFilePath := "/tmp/myImage.png"
