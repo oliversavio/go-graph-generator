@@ -20,4 +20,13 @@ func main() {
 
 	pkg.RenderGraph(req)
 
+	s := pkg.GetSubgraph(g, "D")
+
+	dotFilePath2 := "/tmp/hello2.dot"
+	outFilePath2 := "/tmp/myImage2.png"
+
+	req2 := pkg.RenderRequest{Graph: s, DotFilePath: dotFilePath2, GraphImagePath: outFilePath2, ImageFormat: "-Tpng"}
+
+	pkg.RenderGraph(req2)
+
 }

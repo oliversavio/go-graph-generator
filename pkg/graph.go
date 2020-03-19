@@ -70,6 +70,26 @@ func getString(i interface{}) string {
 	}
 }
 
+// GetSubgraph - Crates a new graph from the node specified as root
+func GetSubgraph(dg *Digraph, root interface{}) *Digraph {
+	children := dg.adj[root]
+	subGraph := NewDigraph()
+
+	subGraph = populateChildren(dg, subGraph, root)
+	for k := range children {
+		subGraph = populateChildren(dg, subGraph, k.value)
+	}
+	return subGraph
+}
+
+func populateChildren(g *Digraph, sg *Digraph, parent interface{}) *Digraph {
+	children := g.adj[parent]
+	for k := range children {
+		sg.AddEdge(getString(parent), getString(k.value), k.label)
+	}
+	return sg
+}
+
 // ToString - Generate Diagraph dot file
 func (d Digraph) ToString() string {
 	var dString strings.Builder
