@@ -72,9 +72,13 @@ func TestSubgraph(t *testing.T) {
 	g.AddEdge("A", "C", "")
 	g.AddEdge("C", "D", "")
 	g.AddEdge("C", "E", "")
+	g.AddEdge("D", "F", "")
+	g.AddEdge("D", "G", "")
 
-	sub := g.GetSubgraph("C")
+	graphTests("digraph {C -> D;C -> E;}", g.GetSubgraph("C", 1).ToString(), t)
 
-	graphTests("digraph {C -> D;C -> E;}", sub.ToString(), t)
+	graphTests("digraph {C -> D;C -> E;D -> F;D -> G;}", g.GetSubgraph("C", 2).ToString(), t)
+
+	graphTests("digraph {E}", g.GetSubgraph("E", 2).ToString(), t)
 
 }

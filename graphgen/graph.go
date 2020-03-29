@@ -1,6 +1,7 @@
 package graphgen
 
 import (
+	"container/list"
 	"log"
 	"strconv"
 	"strings"
@@ -17,7 +18,8 @@ type Graph interface {
 	AddEdge(v interface{}, w interface{}, label string)
 	Links(v interface{}) map[*Vertex]struct{}
 	ToString() string
-	GetSubgraph(root interface{}) Graph
+	GetSubgraph(root interface{}, maxLevel int) Graph
+	V() []Vertex
 }
 
 // Digraph - Graph impl. Supports ints, string and bool types
@@ -62,6 +64,7 @@ func (d *Digraph) AddEdge(v interface{}, w interface{}, label string) {
 		newEdges := make(map[*Vertex]struct{})
 		newEdges[wtx] = exists
 		d.adj[vtx] = newEdges
+		d.adj[wtx] = make(map[*Vertex]struct{})
 	}
 }
 
@@ -95,24 +98,49 @@ func getString(i interface{}) string {
 }
 
 // GetSubgraph - Crates a new graph from the node specified as root
-func (d *Digraph) GetSubgraph(root interface{}) Graph {
+func (d *Digraph) GetSubgraph(root interface{}, maxLevel int) Graph {
 	var sub Graph
+	digraph := NewDigraph()
+	sub = digraph
+	q := list.New()
+	q.PushBack(d.st[root])
+
+	currentLevel := 0
+
+	for q.Len() > 0 && currentLevel < maxLevel {
+		currentLevel++
+		current := q.Front()
+		v := q.Remove(current).(*Vertex)
+		sub = d.populateChildren(sub, v.Value)
+		for ch := range d.Links(v.Value) {
+			q.PushBack(ch)
+		}
+	}
 
 	return sub
 }
 
-func populateChildren(g *Digraph, sg *Digraph, parent interface{}) *Digraph {
-	children := g.Links(parent)
+func (d *Digraph) populateChildren(sg Graph, parent interface{}) Graph {
+	children := d.Links(parent)
 	for k := range children {
 		sg.AddEdge(getString(parent), getString(k.Value), k.Label)
 	}
 	return sg
 }
 
+// V - Get all vertices of graph
+func (d *Digraph) V() []Vertex {
+	vertices := make([]Vertex, len(d.adj))
+	for v := range d.adj {
+		vertices = append(vertices, *v)
+	}
+	return vertices
+}
+
 // ToString - Generate Diagraph dot file
 func (d *Digraph) ToString() string {
 	var dString strings.Builder
-
+	// TODO: Needs fixing
 	dString.WriteString("digraph {")
 	for k, v := range d.adj {
 		for w := range v {
