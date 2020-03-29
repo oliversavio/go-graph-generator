@@ -1,9 +1,9 @@
 package main
 
-import "github.com/oliversavio/go-graph-generator/pkg"
+import "github.com/oliversavio/go-graph-generator/graphgen"
 
 func main() {
-	g := pkg.NewDigraph()
+	g := graphgen.NewDigraph()
 	g.AddEdge("A", "B", "")
 	g.AddEdge("A", "C", "")
 	g.AddEdge("A", "E", "label 1")
@@ -16,17 +16,17 @@ func main() {
 	dotFilePath := "/tmp/hello.dot"
 	outFilePath := "/tmp/myImage.png"
 
-	req := pkg.RenderRequest{Graph: g, DotFilePath: dotFilePath, GraphImagePath: outFilePath, ImageFormat: "-Tpng"}
+	req := graphgen.RenderRequest{Graph: g, DotFilePath: dotFilePath, GraphImagePath: outFilePath, ImageFormat: "-Tpng"}
 
-	pkg.RenderGraph(req)
+	graphgen.RenderGraph(req)
 
-	s := pkg.GetSubgraph(g, "D")
+	s := graphgen.GetSubgraph(g, "D")
 
 	dotFilePath2 := "/tmp/hello2.dot"
 	outFilePath2 := "/tmp/myImage2.png"
 
-	req2 := pkg.RenderRequest{Graph: s, DotFilePath: dotFilePath2, GraphImagePath: outFilePath2, ImageFormat: "-Tpng"}
+	req2 := graphgen.RenderRequest{Graph: s, DotFilePath: dotFilePath2, GraphImagePath: outFilePath2, ImageFormat: "-Tpng"}
 
-	pkg.RenderGraph(req2)
+	graphgen.RenderGraph(req2)
 
 }
