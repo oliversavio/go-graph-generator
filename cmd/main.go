@@ -1,9 +1,13 @@
 package main
 
-import "github.com/oliversavio/go-graph-generator/graphgen"
+import (
+	"fmt"
+
+	"github.com/oliversavio/go-graph-generator/graphgen"
+)
 
 func main() {
-	g := graphgen.NewDigraph()
+	/* g := graphgen.NewDigraph()
 	g.AddEdge("A", "B", "")
 	g.AddEdge("A", "C", "")
 	g.AddEdge("A", "E", "label 1")
@@ -27,6 +31,16 @@ func main() {
 
 	req2 := graphgen.RenderRequest{Graph: s, DotFilePath: dotFilePath2, GraphImagePath: outFilePath2, ImageFormat: "-Tpng"}
 
-	graphgen.RenderGraph(req2)
+	graphgen.RenderGraph(req2) */
+
+	g := graphgen.NewDigraph()
+	g.AddEdge("A", "B", "")
+	g.AddEdge("A", "C", "")
+	g.AddEdge("A", "E", "label 1")
+	g.AddEdge("D", "C", "")
+	g.AddEdge("B", "E", "")
+	g.AddEdge("E", "F", "label 2")
+	g.AddEdge("C", "F", "")
+	fmt.Println(g.ToString())
 
 }
