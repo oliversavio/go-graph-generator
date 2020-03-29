@@ -33,14 +33,17 @@ func main() {
 
 	graphgen.RenderGraph(req2) */
 
-	g := graphgen.NewDigraph()
-	g.AddEdge("A", "B", "")
-	g.AddEdge("A", "C", "")
-	g.AddEdge("A", "E", "label 1")
-	g.AddEdge("D", "C", "")
-	g.AddEdge("B", "E", "")
-	g.AddEdge("E", "F", "label 2")
-	g.AddEdge("C", "F", "")
-	fmt.Println(g.ToString())
+	var graph graphgen.Graph
+	digraph := graphgen.NewDigraph()
+	graph = digraph
+
+	graph.AddEdge("A", "B", "")
+	graph.AddEdge("A", "C", "")
+	graph.AddEdge("A", "E", "label 1")
+	graph.AddEdge("D", "C", "")
+	graph.AddEdge("B", "E", "")
+	graph.AddEdge("E", "F", "label 2")
+	graph.AddEdge("C", "F", "")
+	fmt.Println(graph.ToString())
 
 }

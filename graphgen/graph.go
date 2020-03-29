@@ -15,9 +15,9 @@ type Vertex struct {
 // Graph - Graph DS
 type Graph interface {
 	AddEdge(v interface{}, w interface{}, label string)
-	Links(v interface{}) []Vertex
+	Links(v interface{}) map[*Vertex]struct{}
 	ToString() string
-	GetSubgraph(root interface{}) *Graph
+	GetSubgraph(root interface{}) Graph
 }
 
 // Digraph - Graph impl. Supports ints, string and bool types
@@ -95,15 +95,10 @@ func getString(i interface{}) string {
 }
 
 // GetSubgraph - Crates a new graph from the node specified as root
-func (d *Digraph) GetSubgraph(root interface{}) *Digraph {
-	children := d.Links(root)
-	subGraph := NewDigraph()
+func (d *Digraph) GetSubgraph(root interface{}) Graph {
+	var sub Graph
 
-	subGraph = populateChildren(d, subGraph, root)
-	for k := range children {
-		subGraph = populateChildren(d, subGraph, k.Value)
-	}
-	return subGraph
+	return sub
 }
 
 func populateChildren(g *Digraph, sg *Digraph, parent interface{}) *Digraph {
@@ -115,7 +110,7 @@ func populateChildren(g *Digraph, sg *Digraph, parent interface{}) *Digraph {
 }
 
 // ToString - Generate Diagraph dot file
-func (d Digraph) ToString() string {
+func (d *Digraph) ToString() string {
 	var dString strings.Builder
 
 	dString.WriteString("digraph {")

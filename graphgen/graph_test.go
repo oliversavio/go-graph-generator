@@ -2,10 +2,11 @@ package graphgen
 
 import "testing"
 
-func TestDiGraph(t *testing.T) {
-	var g *Digraph = NewDigraph()
-
-	if g == nil {
+func TestDiGraphImpl(t *testing.T) {
+	var graph Graph
+	digraph := NewDigraph()
+	graph = digraph
+	if graph == nil {
 		t.Error("DiGraph was not initialized")
 	}
 }
