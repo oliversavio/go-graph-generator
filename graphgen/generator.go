@@ -9,7 +9,7 @@ import (
 
 // RenderRequest Params needed to render the graph
 type RenderRequest struct {
-	Graph          *Digraph
+	G              Graph
 	DotFilePath    string
 	GraphImagePath string
 	ImageFormat    string
@@ -18,7 +18,7 @@ type RenderRequest struct {
 // RenderGraph - Generates the dot file and write it to a file
 func RenderGraph(rr RenderRequest) {
 	log.Println("Generating Graph dot file")
-	writeToFile([]byte(rr.Graph.ToString()), rr.DotFilePath)
+	writeToFile([]byte(rr.G.ToString()), rr.DotFilePath)
 	graphBin := generateGraph(rr.DotFilePath, rr.ImageFormat)
 	writeToFile(graphBin, rr.GraphImagePath)
 	log.Println("Done")

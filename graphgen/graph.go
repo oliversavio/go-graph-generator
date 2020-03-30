@@ -2,7 +2,6 @@ package graphgen
 
 import (
 	"container/list"
-	"log"
 	"strconv"
 	"strings"
 )
@@ -15,6 +14,7 @@ type Vertex struct {
 
 // Graph - Graph DS
 type Graph interface {
+	AddVertex(v interface{}) *Vertex
 	AddEdge(v interface{}, w interface{}, label string)
 	Links(v interface{}) map[*Vertex]struct{}
 	ToString() string
@@ -42,30 +42,16 @@ func newVertex(w interface{}, label string) *Vertex {
 
 // AddEdge - edd edge to diagraph
 func (d *Digraph) AddEdge(v interface{}, w interface{}, label string) {
-	vtx, vExist := d.st[v]
-	wtx, wExist := d.st[w]
-
-	if !vExist {
-		log.Printf("Vertex %s doesn't exist, creating", v)
-		vtx = newVertex(v, "")
-		d.st[v] = vtx
-	}
-
-	if !wExist || wtx.Label != label {
-		wtx = newVertex(w, label)
-		d.st[w] = wtx
-	}
-
-	edges, ok := d.adj[vtx]
-	if ok {
-		edges[wtx] = exists
-		d.adj[vtx] = edges
+	var vert *Vertex = d.AddVertex(v)
+	var wert *Vertex = d.AddVertex(w)
+	edges, _ := d.adj[vert]
+	if wert.Label != label {
+		edges[newVertex(w, label)] = exists
 	} else {
-		newEdges := make(map[*Vertex]struct{})
-		newEdges[wtx] = exists
-		d.adj[vtx] = newEdges
-		d.adj[wtx] = make(map[*Vertex]struct{})
+		edges[wert] = exists
 	}
+
+	d.adj[vert] = edges
 }
 
 // Links - Get linked vertices
@@ -125,37 +111,64 @@ func (d *Digraph) populateChildren(sg Graph, parent interface{}) Graph {
 	for k := range children {
 		sg.AddEdge(getString(parent), getString(k.Value), k.Label)
 	}
+
+	if len(children) == 0 {
+		sg.AddVertex(parent)
+	}
+
 	return sg
 }
 
 // V - Get all vertices of graph
 func (d *Digraph) V() []Vertex {
-	vertices := make([]Vertex, len(d.adj))
+	vertices := make([]Vertex, 0)
 	for v := range d.adj {
 		vertices = append(vertices, *v)
 	}
 	return vertices
 }
 
+// AddVertex - Add vertext to Graph
+func (d *Digraph) AddVertex(v interface{}) *Vertex {
+	vtx, exist := d.st[v]
+	if !exist {
+		vtx = newVertex(v, "")
+		d.st[v] = vtx
+		d.adj[vtx] = make(map[*Vertex]struct{})
+	}
+	return vtx
+}
+
 // ToString - Generate Diagraph dot file
 func (d *Digraph) ToString() string {
 	var dString strings.Builder
-	// TODO: Needs fixing
 	dString.WriteString("digraph {")
-	for k, v := range d.adj {
-		for w := range v {
-			dString.WriteString(getString(k.Value))
-			dString.WriteString(" -> ")
-			dString.WriteString(getString(w.Value))
-			if len(w.Label) > 0 {
-				dString.WriteString("[label=\"")
-				dString.WriteString(w.Label)
-				dString.WriteString("\"]")
-			}
+	for _, v := range d.V() {
+		children := d.Links(v.Value)
+		if len(children) > 0 {
+			renderChildren(&dString, v, children)
+		} else {
+			dString.WriteString(getString(v.Value))
 			dString.WriteString(";")
 		}
 	}
 	dString.WriteString("}")
 
 	return dString.String()
+}
+
+func renderChildren(dString *strings.Builder, root Vertex, children map[*Vertex]struct{}) *strings.Builder {
+	for w := range children {
+		dString.WriteString(getString(root.Value))
+		dString.WriteString(" -> ")
+		dString.WriteString(getString(w.Value))
+		if len(w.Label) > 0 {
+			dString.WriteString("[label=\"")
+			dString.WriteString(w.Label)
+			dString.WriteString("\"]")
+		}
+		dString.WriteString(";")
+	}
+
+	return dString
 }

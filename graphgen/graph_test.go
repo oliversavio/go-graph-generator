@@ -1,6 +1,10 @@
 package graphgen
 
-import "testing"
+import (
+	"sort"
+	"strings"
+	"testing"
+)
 
 func TestDiGraphImpl(t *testing.T) {
 	var graph Graph
@@ -49,18 +53,28 @@ func TestToString(t *testing.T) {
 	}
 
 	g.AddEdge("A", "B", "")
-	graphTests("digraph {A -> B;}", g.ToString(), t)
+	graphTests("digraph {A -> B;B;}", g.ToString(), t)
 
 	g.AddEdge("A", "B", "")
-	graphTests("digraph {A -> B;}", g.ToString(), t)
+	graphTests("digraph {A -> B;B;}", g.ToString(), t)
 
 	g.AddEdge("A", "C", "with edge")
-	graphTests("digraph {A -> B;A -> C[label=\"with edge\"];}", g.ToString(), t)
+	graphTests("digraph {A -> B;A -> C[label=\"with edge\"];B;C;}", g.ToString(), t)
 
 }
 
+func sortString(w string) string {
+	s := strings.Split(w, "")
+	sort.Strings(s)
+	return strings.Join(s, "")
+}
+
 func graphTests(expected string, actual string, t *testing.T) {
-	if expected != actual {
+
+	ex := sortString(expected)
+	ac := sortString(actual)
+
+	if ex != ac {
 		t.Errorf("Expected: %s --> Actual: %s", expected, actual)
 	}
 }
@@ -75,10 +89,42 @@ func TestSubgraph(t *testing.T) {
 	g.AddEdge("D", "F", "")
 	g.AddEdge("D", "G", "")
 
-	graphTests("digraph {C -> D;C -> E;}", g.GetSubgraph("C", 1).ToString(), t)
+	graphTests("digraph {C -> D;C -> E;D;E;}", g.GetSubgraph("C", 1).ToString(), t)
 
-	graphTests("digraph {C -> D;C -> E;D -> F;D -> G;}", g.GetSubgraph("C", 2).ToString(), t)
+	graphTests("digraph {C -> D;C -> E;D -> F;D -> G;E;F;G;}", g.GetSubgraph("C", 2).ToString(), t)
 
-	graphTests("digraph {E}", g.GetSubgraph("E", 2).ToString(), t)
+	graphTests("digraph {E;}", g.GetSubgraph("E", 2).ToString(), t)
+
+}
+
+func TestGetAllVertices(t *testing.T) {
+	var g Graph
+	digraph := NewDigraph()
+	g = digraph
+
+	g.AddEdge("A", "B", "none")
+	vertices := g.V()
+
+	g.AddEdge("A", "B", "")
+	if len(vertices) != 2 {
+		t.Errorf("Expected 2 Found: %d", len(vertices))
+	}
+
+	g.AddEdge("A", "C", "")
+	g.AddEdge("C", "D", "")
+	g.AddEdge("C", "E", "")
+	g.AddEdge("D", "F", "")
+	g.AddEdge("D", "G", "")
+
+	subLevel1 := g.GetSubgraph("C", 10)
+
+	if len(subLevel1.V()) != 5 {
+		t.Errorf("Expected 5. Found: %d", len(subLevel1.V()))
+	}
+
+	subLevel2 := g.GetSubgraph("E", 10)
+	if len(subLevel2.V()) != 1 {
+		t.Errorf("Expected 1, Found %d", len(subLevel2.V()))
+	}
 
 }
