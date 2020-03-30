@@ -20,9 +20,7 @@ func main() {
 
 	dotFilePath := "/tmp/hello.dot"
 	outFilePath := "/tmp/myImage.png"
-
 	req := graphgen.RenderRequest{G: g, DotFilePath: dotFilePath, GraphImagePath: outFilePath, ImageFormat: "-Tpng"}
-
 	graphgen.RenderGraph(req)
 
 	s := g.GetSubgraph("D", 10)
